@@ -1,0 +1,16 @@
+diff --git a/ggml/src/ggml-vulkan/ggml-vulkan-buffers.cpp b/ggml/src/ggml-vulkan/ggml-vulkan-buffers.cpp
+index 4d4c84951..91d2c1e1a 100644
+--- a/ggml/src/ggml-vulkan/ggml-vulkan-buffers.cpp
++++ b/ggml/src/ggml-vulkan/ggml-vulkan-buffers.cpp
+@@ -621,7 +621,10 @@ void ggml_vk_buffer_read_2d(vk_buffer& src, size_t offset, void * dst, size_t sp
+     // If the device is not an UMA device the memory is host-accessible through rebar. While writing
+     // through PCIe is sufficient fast reading back data from PCIe is slower than going through
+     // the HW device to host copy path.
+-    if(src->memory_property_flags & vk::MemoryPropertyFlagBits::eHostVisible && src->device->uma) {
++    // On UMA, only read through the mapping if the memory is host-cached. Reading uncached
++    // (write-combined) memory with memcpy is very slow, use the staging copy instead.
++    if(src->memory_property_flags & vk::MemoryPropertyFlagBits::eHostVisible && src->device->uma &&
++       src->memory_property_flags & vk::MemoryPropertyFlagBits::eHostCached) {
+         GGML_ASSERT(src->memory_property_flags & vk::MemoryPropertyFlagBits::eHostCoherent);
+ 
+         std::lock_guard<std::recursive_mutex> guard(src->device->mutex);
