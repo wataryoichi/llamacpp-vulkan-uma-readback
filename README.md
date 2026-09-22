@@ -78,7 +78,7 @@ Upstream master `7ab4ee7ba`, same tree and same flags for both columns, only the
 | chat turn 1 (1821 tokens, cold) | 1973 ms | **1356 ms** |
 | chat turn 2 (+139 tokens on the cached conversation) | 873 ms | **258 ms** |
 | chat turn 3 (+139 tokens) | 874 ms | **263 ms** |
-| 600 short classification requests, p50 | 738 ms | **100 ms** |
+| 600 short single-token requests (~115-token prompts, repeated prefixes), p50 | 738 ms | **100 ms** |
 
 No throughput regression:
 
